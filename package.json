@@ -1,12 +1,11 @@
 {
   "name": "blockpuzzle",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.17.1"
   },
   "engines": {
     "node": "^6.10.0"
@@ -14,5 +13,14 @@
   "devDependencies": {},
   "scripts": {
     "start": "node app.js"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chalnicol/blockpuzzle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chalnicol/blockpuzzle/issues"
+  },
+  "homepage": "https://github.com/chalnicol/blockpuzzle#readme",
+  "description": ""
 }
