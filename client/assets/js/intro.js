@@ -18,6 +18,10 @@ class Intro extends Phaser.Scene {
         // create grid 
         var _this = this;
 
+        this.round = 0;
+
+        this.counter = 0;
+
         this.boxClicked = 0;
 
         this.eldata = 0;
@@ -85,6 +89,9 @@ class Intro extends Phaser.Scene {
         }
 
         // load elements data.. 
+        
+        this.elementsCont = this.add.container (0, 0);
+
         this.elements = [];
 
         var xmlhttp = new XMLHttpRequest();
@@ -119,6 +126,7 @@ class Intro extends Phaser.Scene {
                 this.isBoxClicked = false;
 
             }
+
         }, this );
 
         this.input.on ('pointermove', function ( pointer ) {
@@ -129,27 +137,26 @@ class Intro extends Phaser.Scene {
 
     }
 
-    createRandomElements ( node ) 
+    createRandomElements () 
     {
-
-        this.elementsCont = this.add.container (0, 0);
-
+        
         for ( var i = 0; i < 3; i++ ) {
 
             let box = this.bottomCont.getByName ('box' + i );
 
             let randNum = Math.floor ( Math.random() * this.elements.length );
 
-            let dim = box.width * 0.8/5;
+            let dim = box.width * 0.9/5;
 
             let element = new GameElement ( this, box.x, box.y, null,  this.elements [ randNum ], dim, 1 ).setName ('el' + i );
         
             this.elementsCont.add (element);
 
-
             box.setInteractive().setData('eldata', randNum);
 
         }
+
+        this.counter = 0;
 
     }
 
@@ -333,6 +340,7 @@ class Intro extends Phaser.Scene {
 
     setPermanent ()
     {
+        let _this =
 
         let cell = this.cellsCont.getByName ('cell' + this.cellCollided );
 
@@ -340,30 +348,32 @@ class Intro extends Phaser.Scene {
 
         const bx = cell.x + bigEl.width/2,
               by = cell.y + bigEl.height/2;
-
         
         this.add.tween ({
             targets : bigEl,
             x : bx, y : by,
             duration : 30,
-            ease : 'Linear'
+            ease : 'Linear',
+            onComplete: function () {
+                
+                
+            }
         });
 
-        bigEl.iterate ( function (child) {
+        //destroy        
+        this.elementsCont.getByName ('el' + this.boxClicked ).destroy();
 
-            this.add.tween ({
-                targets : child,
-                scaleX : 1, scaleY: 1,
-                duration : 30,
-                ease : 'Linear'
-            });
+        //create elements after 3
+        this.counter += 1;
 
-        }, this );
-
-        
-
+        if ( this.counter >= 3 ) {
+            this.createRandomElements ();
+        }
         
         
     }
+
+
+    
 
 }
