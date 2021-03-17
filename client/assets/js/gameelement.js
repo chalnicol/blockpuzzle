@@ -61,6 +61,25 @@ class GameElement extends Phaser.GameObjects.Container {
 
     }
 
+    darken () 
+    {
+        this.iterate ( function ( child ) {
+            child.setFillStyle ( 0x9e9e9e, 1 );
+        });
+
+    }
+
+    resetColor () 
+    {
+
+        let _this = this;
+
+        this.iterate ( function ( child ) {
+            child.setFillStyle ( _this.myClr, 1 );
+        });
+
+    }
+
 
     
 }

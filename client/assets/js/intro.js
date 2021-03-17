@@ -168,7 +168,7 @@ class Intro extends Phaser.Scene {
         
             this.elementsCont.add (element);
 
-            this.elementsData.push ( { 'style' : randNum, 'colorid' : rndClrId } );
+            this.elementsData.push ( { 'style' : randNum, 'colorid' : rndClrId, 'used' : false } );
 
         }
 
@@ -265,7 +265,7 @@ class Intro extends Phaser.Scene {
 
         if ( cellHit != null ) {
 
-            if ( this.checkField ( cellHit ) ) {
+            if ( this.checkField ( cellHit, this.boxClicked ) ) {
 
                 this.cellCollided = cellHit;
 
@@ -350,9 +350,9 @@ class Intro extends Phaser.Scene {
         }
     }
 
-    checkField ( cellid ) {
+    checkField ( cellid, el ) {
 
-        const mydata = this.elements [ this.elementsData [ this.boxClicked ].style  ];
+        const mydata = this.elements [ this.elementsData [ el ].style  ];
 
         const r = Math.floor ( cellid/8 ), c = cellid % 8;
          
@@ -364,9 +364,9 @@ class Intro extends Phaser.Scene {
 
                 if ( mydata.arr [i][j] == 1 ) {
 
-                    let cellid = ( i+r) * 8 + ( c+j );
+                    let cellnmbr = ( i+r) * 8 + ( c+j );
 
-                    if ( this.grid [ cellid ] == 1 ) return false;
+                    if ( this.grid [ cellnmbr ] == 1 ) return false;
 
                 }
                
@@ -412,6 +412,9 @@ class Intro extends Phaser.Scene {
 
         //destroy        
         this.elementsCont.getByName ('el' + this.boxClicked ).destroy();
+
+        this.elementsData [ this.boxClicked ].used = true;
+
     }
 
     showPermanent () 
@@ -469,10 +472,14 @@ class Intro extends Phaser.Scene {
         this.checkLines ();
 
         this.counter += 1;
+
         if ( this.counter >= 3 ) {
             this.counter = 0;
             this.createRandomElements ();
         }
+
+        this.checkElementsAvailability ();
+
 
 
     }
@@ -684,10 +691,62 @@ class Intro extends Phaser.Scene {
 
     }
 
-    checkFit () 
+    checkFit ( el ) 
     {
 
-        
+        let  mydata = this.elements [ this.elementsData [ el ].style  ];
+
+        let counter = 0;
+
+        for ( var cs = 0; cs < 64; cs++) {
+
+            if ( this.checkField ( cs, el ) ) {
+                counter += 1;
+            }
+    
+        }
+
+        return counter > 0;
+    
+    }
+
+    checkElementsAvailability ()
+    {
+
+        let activeCounter = 0;
+
+        for ( var i = 0; i < 3; i++ ) {
+
+            if ( !this.elementsData [ i ].used ) {
+
+                let el = this.elementsCont.getByName ('el' + i );
+
+                el.resetColor();
+
+                let bx =  this.bottomCont.getByName ('box' + i);
+
+                bx.setInteractive();
+
+                if ( !this.checkFit ( i ) ) {
+
+                    bx.disableInteractive ();
+
+                    el.darken();
+
+                }else {
+
+                    activeCounter += 1;
+
+                }
+
+            }
+
+        }
+
+        if ( activeCounter == 0 ) {
+
+            console.log ( 'Game Over' );
+        } 
 
     }
 
