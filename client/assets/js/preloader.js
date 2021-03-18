@@ -34,24 +34,17 @@ class Preloader extends Phaser.Scene {
         });
 
         
-        //scene1
-        this.load.image('loadImg', 'client/assets/images/load_image.png');
-
-        this.load.image('bgImg', 'client/assets/images/bg.png');
-
-        this.load.image('titleImg', 'client/assets/images/title.png');
-
-        this.load.spritesheet('startBtn', 'client/assets/images/startGame_btn.png', { frameWidth: 455, frameHeight: 107 });
-
-        this.load.spritesheet('select', 'client/assets/images/select.png', { frameWidth: 297, frameHeight: 81 });
-
-        this.load.spritesheet('audioBtns', 'client/assets/images/audio_btns.png', { frameWidth: 60, frameHeight: 50 });
 
         //scene2
-        this.load.image('select2', 'client/assets/images/select2.png');
+        this.load.image('setting', 'client/assets/images/setting.png');
 
-        this.load.spritesheet('select2_btns', 'client/assets/images/select2_btns.png', { frameWidth: 66, frameHeight: 66 });
+        this.load.image('gameOver', 'client/assets/images/gameOverScreen.png');
+        
 
+        this.load.spritesheet('bigs', 'client/assets/images/big.png', { frameWidth: 130, frameHeight: 130 });
+
+        this.load.spritesheet('smalls', 'client/assets/images/sm.png', { frameWidth: 60, frameHeight: 60 });
+        
         this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
             'client/assets/sfx/sfx.ogg',
             'client/assets/sfx/sfx.mp3'

@@ -1,6 +1,6 @@
 class GameElement extends Phaser.GameObjects.Container {
 
-    constructor(scene, x, y, children, dataObj, dims, clrid, scl=1 ) {
+    constructor(scene, x, y, children, dataObj, dims, clrid, scl=1, img = 'bigs' ) {
 
         super(scene, x, y, children);
         // ...
@@ -16,29 +16,8 @@ class GameElement extends Phaser.GameObjects.Container {
 
         this.clrid = clrid;
 
-        this.scl = scl;
+        this.isDarkened = false;
        
-        //const randClrNmbr = Math.floor ( Math.random() * 3 );
-
-        let clr = 0;
-
-        switch ( clrid ) {
-            case 0:
-                clr = 0x33ff33;
-                break;
-            case 1:
-                clr = 0x33ffff;
-                break;
-            case 2:
-                clr = 0xff33ff;
-                break;
-            default:
-                //clr = '0xffff00';
-                break;
-        }
-
-        this.myClr = clr;
-
         //...
 
         for ( var i = 0; i < this.dataObj.row ; i++ ) {
@@ -47,9 +26,11 @@ class GameElement extends Phaser.GameObjects.Container {
 
                 if ( this.dataObj.arr [i][j] == 1 ) {
 
-                    let rct = this.scene.add.rectangle ( ( j * dims) - wd/2 + (dims/2) , ( i *dims ) - ht/2 + (dims/2),  dims, dims, clr, 1 ).setStrokeStyle (2, 0x000000).setScale(scl);
+                    //let rct = this.scene.add.rectangle ( ( j * dims) - wd/2 + (dims/2) , ( i *dims ) - ht/2 + (dims/2),  dims, dims, clr, 1 ).setStrokeStyle (2, 0x000000).setScale(scl);
 
-                    this.add ( rct );
+                    let imga = scene.add.image (  ( j * dims) - wd/2 + (dims/2) , ( i *dims ) - ht/2 + (dims/2), img, this.clrid  ).setScale(scl);
+
+                    this.add ( imga );
 
                 }
     
@@ -63,20 +44,22 @@ class GameElement extends Phaser.GameObjects.Container {
 
     darken () 
     {
+        this.isDarkened = true;
+        
         this.iterate ( function ( child ) {
-            child.setFillStyle ( 0x9e9e9e, 1 );
+            child.setFrame ( 0 );
         });
-
     }
 
     resetColor () 
     {
+        var _this = this;
 
-        let _this = this;
-
-        this.iterate ( function ( child ) {
-            child.setFillStyle ( _this.myClr, 1 );
-        });
+        if ( this.isDarkened ) {
+            this.iterate ( function ( child ) {
+                child.setFrame ( _this.clrid );
+            });
+        }
 
     }
 

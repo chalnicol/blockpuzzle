@@ -34,16 +34,19 @@ class Intro extends Phaser.Scene {
 
         this.isBoxClicked = false;
 
+        this.gameIsOver = false;
+
         let _gW = this.game.config.width,
             _gH = this.game.config.height;
 
 
-        this.scoreTxt = this.add.text ( 10, 10, 'Score : 0', { fontSize: _gH*0.03, fontFamily:'Oswald', color:'black' });
+        
 
         //create grid..
-        const bsize = (_gW*0.96)/8;
 
-        const sx = (_gW - (_gW*0.96))/2, 
+        const bsize = 130;
+
+        const sx = (_gW - (bsize*8))/2, 
               sy = _gH * 0.15;
 
         this.cellsCont = this.add.container (0,0);
@@ -58,9 +61,9 @@ class Intro extends Phaser.Scene {
 
             let rcta = this.add.rectangle (xp, yp, bsize, bsize, 0x8e8e8e, 1 ).setOrigin (0).setStrokeStyle( 2, 0xffffff ).setData ('id', i ).setName('cell'+i);
 
-            let txt = this.add.text (xp +(bsize*0.1), yp + (bsize*0.05), i, { color:'white', fontSize : bsize*0.3, fontFamily : 'Oswald'} );
+            //let txt = this.add.text (xp +(bsize*0.1), yp + (bsize*0.05), i, { color:'white', fontSize : bsize*0.3, fontFamily : 'Oswald'} );
 
-            this.cellsCont.add ( [rcta, txt] );
+            this.cellsCont.add ( rcta );
 
             this.grid.push ( 0 );
 
@@ -81,7 +84,7 @@ class Intro extends Phaser.Scene {
 
         for ( var i = 0; i < 3; i++ ) {
 
-            let box = this.add.rectangle ( i * (csize+cspace) + sxa,  sya, csize, csize, 0x3a3a3a, 1 ).setName ('box' + i ).setData('id', i);
+            let box = this.add.rectangle ( i * (csize+cspace) + sxa,  sya, csize, csize, 0x3a3a3a, 0 ).setName ('box' + i ).setData('id', i);
 
             box.on ('pointerdown', function ( pointer ) {
                 
@@ -94,6 +97,34 @@ class Intro extends Phaser.Scene {
             this.bottomCont.add ( box );
 
         }
+
+        this.add.rectangle ( _gW/2, _gH*0.8, 1040, csize, 0x9c9c9c, 1 ).setStrokeStyle (2, 0xffffff);
+
+        this.add.text ( 25, _gH*0.97, 'Version By : Chalnicol', { fontSize: 30, fontFamily:'Oswald', color : 'black'});
+
+
+        // score..
+        
+        this.add.rectangle (20, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
+
+        this.add.rectangle (462, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
+
+        this.add.rectangle (905, 50, 153, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
+
+
+
+        this.scoreTxt = this.add.text ( 424, 50, '0', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
+
+        this.bestTxt = this.add.text ( 866, 50, '5061', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
+
+
+        this.add.text ( 22, 215, 'CURRENT SCORE', { fontSize: 30, fontFamily:'Oswald', color: '#803612' });
+
+        this.add.text ( 464, 215, 'BEST SCORE', { fontSize: 30, fontFamily:'Oswald', color: '#803612' });
+
+        this.add.image ( 981, 126.5, 'setting', );
+        
+
 
         // load elements data.. 
         this.elements = [];
@@ -137,6 +168,12 @@ class Intro extends Phaser.Scene {
 
             }
 
+            if ( this.gameIsOver ) {
+
+                this.removeGameOverScreen ();
+                this.gameReset ();
+            }
+
         }, this );
 
         this.input.on ('pointermove', function ( pointer ) {
@@ -147,6 +184,7 @@ class Intro extends Phaser.Scene {
 
     }
 
+    
     createRandomElements () 
     {
         
@@ -160,11 +198,13 @@ class Intro extends Phaser.Scene {
 
             let randNum = Math.floor ( Math.random() * this.elements.length );
 
-            let rndClrId = Math.floor ( Math.random() * 3 );
+            let rndClrId = Math.floor ( Math.random() * 4 ) + 1 ;
 
-            let dim = box.width * 0.9/5;
+            // let dim = box.width * 0.9/5;
 
-            let element = new GameElement ( this, box.x, box.y, null,  this.elements [ randNum ], dim, rndClrId, 1 ).setName ('el' + i );
+            let dim = 60;
+
+            let element = new GameElement ( this, box.x, box.y, null,  this.elements [ randNum ], dim, rndClrId, 1, 'smalls' ).setName ('el' + i );
         
             this.elementsCont.add (element);
 
@@ -194,9 +234,7 @@ class Intro extends Phaser.Scene {
 
         box.disableInteractive();
 
-
         //..
-
         let totalH = this.elements [edata].row * this.trueSize;
 
         let bigger = new GameElement ( this, box.x, box.y, null,  this.elements [ edata ], this.trueSize, eclr, 0.9 ).setName ('bigEl' + this.boxClicked );
@@ -210,7 +248,6 @@ class Intro extends Phaser.Scene {
             duration : 30,
             ease : 'Linear'
         });
-
 
     }
 
@@ -428,22 +465,6 @@ class Intro extends Phaser.Scene {
 
         let clrid = this.elementsData [ this.boxClicked ].colorid;
 
-        switch ( clrid ) {
-            case 0:
-                clr = 0x33ff33;
-                break;
-            case 1:
-                clr = 0x33ffff;
-                break;
-            case 2:
-                clr = 0xff33ff;
-                break;
-            default:
-                //clr = '0xffff00';
-                break;
-        }
-
-
         for ( var i = 0; i < mydata.row ; i++ ) {
 
             for ( var j = 0; j < mydata.col ; j++ ) {
@@ -454,7 +475,9 @@ class Intro extends Phaser.Scene {
 
                     let cll = this.cellsCont.getByName ('cell' + cellid );
 
-                    let cellP = this.add.rectangle ( cll.x + this.trueSize/2, cll.y + this.trueSize/2, this.trueSize, this.trueSize, clr, 1 ).setStrokeStyle ( 2, 0x1a1a1a ).setName ('cp' + cellid ).setData('origClr', clrid );
+                    //let cellP = this.add.rectangle ( cll.x + this.trueSize/2, cll.y + this.trueSize/2, this.trueSize, this.trueSize, clr, 1 ).setStrokeStyle ( 2, 0x1a1a1a ).setName ('cp' + cellid ).setData('origClr', clrid );
+
+                    let cellP = this.add.image ( cll.x + this.trueSize/2, cll.y + this.trueSize/2, 'bigs', clrid ).setName ('cp' + cellid ).setData('origClr', clrid );
 
                     this.cellPermanentCont.add ( cellP );
 
@@ -581,7 +604,7 @@ class Intro extends Phaser.Scene {
             this.grid [ linesdata.fin[i] ] = 0;
         }
 
-        this.scoreTxt.text = 'Score : ' + this.score;
+        this.scoreTxt.text = this.score;
 
     }
 
@@ -615,23 +638,7 @@ class Intro extends Phaser.Scene {
 
         if ( linesdata.lines > 0 ) {
 
-            let clr = 0;
-
-            switch ( this.elementsData [ this.boxClicked ].colorid ) {
-                case 0:
-                    clr = 0x33ff33;
-                    break;
-                case 1:
-                    clr = 0x33ffff;
-                    break;
-                case 2:
-                    clr = 0xff33ff;
-                    break;
-                default:
-                    //clr = '0xffff00';
-                    break;
-            }
-
+            const clrid =  this.elementsData [ this.boxClicked ].colorid;
 
             for ( var i = 0; i < linesdata.fin.length; i++ ) {
 
@@ -639,7 +646,7 @@ class Intro extends Phaser.Scene {
 
                     let cell = this.cellPermanentCont.getByName ('cp' + linesdata.fin[i] );
 
-                    cell.setFillStyle ( clr, 1 );
+                    cell.setFrame ( clrid );
                 }
 
             }
@@ -654,27 +661,7 @@ class Intro extends Phaser.Scene {
             
             let clr = 0;
 
-            //console.log ( child.getData ('origClr')  );
-
-            switch ( child.getData ('origClr')) {
-                case 0:
-                    clr = 0x33ff33;
-                    break;
-                case 1:
-                    clr = 0x33ffff;
-                    break;
-                case 2:
-                    clr = 0xff33ff;
-                    break;
-                default:
-                    //clr = '0xffff00';
-                    break;
-            }
-
-            child.setFillStyle (clr, 1 );
-
-
-
+            child.setFrame ( child.getData ('origClr') );
         });
 
     }
@@ -745,10 +732,87 @@ class Intro extends Phaser.Scene {
 
         if ( activeCounter == 0 ) {
 
-            console.log ( 'Game Over' );
+            this.time.delayedCall( 1000, function () {
+                this.showGameOverScreen ();
+            }, [], this);  // delay in ms
+            
         } 
 
     }
 
+    showGameOverScreen ()
+    {
 
+        let _gW = this.game.config.width,
+            _gH = this.game.config.height;
+
+
+        this.bgBlack = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH, 0x0a0a0a, 0.5 )
+
+        this.gameOverCont = this.add.container (0, _gH/2);
+
+        //let srct = this.add.rectangle ( _gW/2, _gH*0.4, _gW*0.7, _gH*0.2, 0xffffff, 1 );
+
+        let srct = this.add.image ( _gW/2, _gH*0.4, 'gameOver' );
+
+
+        let txt = this.add.text ( _gW/2, _gH*0.38, 'Game Over', { fontFamily:'Oswald', fontSize: _gH*0.04, color : 'black'} ).setOrigin(0.5);
+
+        let txt2 = this.add.text ( _gW/2, _gH*0.425, 'Click Anywhere To Play Again', { fontFamily:'Oswald', fontSize: _gH*0.018, color : '#ff0000'} ).setOrigin(0.5);
+
+
+        this.gameOverCont.add ([ srct, txt, txt2 ]);
+
+        this.add.tween ({
+            targets : this.gameOverCont,
+            y : 0,
+            duration : 200,
+            ease : 'Linear'
+        });
+
+        this.gameIsOver = true;
+
+
+    }
+
+    removeGameOverScreen ()
+    {
+        this.gameOverCont.destroy ();
+        this.bgBlack.destroy ();
+    }
+
+    gameReset ()
+    {
+
+        this.score = 0;
+
+        this.cellCollided = -1;
+
+        this.gameIsOver = false;
+        
+        //resetGrid 
+        for ( var i = 0; i < this.grid.length; i++) {
+            this.grid [i] = 0;
+        }
+
+        this.cellPermanentCont.each ( function ( child ) {
+            child.destroy ();
+        });
+
+        this.elementsCont.each ( function ( child ) {
+            child.destroy ();
+            
+        });
+
+        this.scoreTxt.text = "0";
+
+        this.counter = 0;
+
+        this.time.delayedCall( 1000, function () {
+            this.createRandomElements ();
+        }, [], this);  // delay in ms
+    
+        
+
+    }
 }
