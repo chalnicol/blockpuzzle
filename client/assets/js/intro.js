@@ -251,7 +251,7 @@ class Intro extends Phaser.Scene {
         this.tweens.add ({
             targets : bigger,
             scaleX : 1, scaleY : 1,
-            y : pointer.y - (totalH/2),
+            y : pointer.y - (totalH/2) - 100,
             duration : 30,
             ease : 'Linear'
         });
@@ -305,7 +305,7 @@ class Intro extends Phaser.Scene {
 
         let bigEl = this.children.getByName ( 'bigEl' + this.boxClicked );
 
-        bigEl.setPosition ( x, y - (totalH/2)  );
+        bigEl.setPosition ( x, y - (totalH/2) - 100  );
 
 
         let cellHit = this.getHit ();
