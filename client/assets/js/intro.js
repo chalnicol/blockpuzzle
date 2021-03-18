@@ -111,12 +111,9 @@ class Intro extends Phaser.Scene {
 
         this.add.rectangle (905, 50, 153, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
 
-
-
         this.scoreTxt = this.add.text ( 424, 50, '0', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
 
         this.bestTxt = this.add.text ( 866, 50, '5061', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
-
 
         this.add.text ( 22, 215, 'CURRENT SCORE', { fontSize: 30, fontFamily:'Oswald', color: '#803612' });
 
@@ -147,6 +144,13 @@ class Intro extends Phaser.Scene {
 
         //create container for cells fielded..
         this.cellPermanentCont = this.add.container(0, 0);
+
+        //initBgSound
+        //this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
+
+        //this.bgmusic.play();
+
+        this.music = this.sound.addAudioSprite('sfx');
 
         //..
         this.input.on ('pointerup', function ( pointer ) {
@@ -184,7 +188,10 @@ class Intro extends Phaser.Scene {
 
     }
 
-    
+    playSound ( snd, vol=0.5 ) {
+        this.music.play ( snd, { volume : vol } );
+    }
+
     createRandomElements () 
     {
         
@@ -198,7 +205,7 @@ class Intro extends Phaser.Scene {
 
             let randNum = Math.floor ( Math.random() * this.elements.length );
 
-            let rndClrId = Math.floor ( Math.random() * 4 ) + 1 ;
+            let rndClrId = Math.floor ( Math.random() * 5 ) + 1 ;
 
             // let dim = box.width * 0.9/5;
 
@@ -248,6 +255,9 @@ class Intro extends Phaser.Scene {
             duration : 30,
             ease : 'Linear'
         });
+
+        this.playSound ( 'clicka' );
+
 
     }
 
@@ -452,6 +462,9 @@ class Intro extends Phaser.Scene {
 
         this.elementsData [ this.boxClicked ].used = true;
 
+        this.playSound ('clickc');
+
+
     }
 
     showPermanent () 
@@ -492,16 +505,24 @@ class Intro extends Phaser.Scene {
 
         this.clearCells ();
 
-        this.checkLines ();
+        this.time.delayedCall( 200, function () {
 
-        this.counter += 1;
+            this.checkLines ();
 
-        if ( this.counter >= 3 ) {
-            this.counter = 0;
-            this.createRandomElements ();
-        }
+            this.counter += 1;
 
-        this.checkElementsAvailability ();
+            if ( this.counter >= 3 ) {
+                this.counter = 0;
+                this.createRandomElements ();
+            }
+
+            this.checkElementsAvailability ();
+
+        }, [], this);  // delay in ms
+    
+
+
+        
 
 
 
@@ -573,35 +594,42 @@ class Intro extends Phaser.Scene {
 
         let linesdata = this.getLines ( this.grid );
 
-        if ( linesdata.lines == 1 ) {
-            this.score += 10;
-        }else if ( linesdata.lines == 2 ) {
-            this.score += 30;
-        }else if ( linesdata.lines == 3 ) {
-            this.score += 60;
-        }else if ( linesdata.lines == 4 ) {
-            this.score += 100;
-        }else if ( linesdata.lines > 4 ) {
-            this.score += 200;
-        }
-        
-        for ( var i = 0; i < linesdata.fin.length; i++ ) {
+        if ( linesdata.lines > 0 ) {
 
-            let cell = this.cellPermanentCont.getByName ('cp' + linesdata.fin[i] );
+            if ( linesdata.lines == 1 ) {
+                this.score += 10;
+            }else if ( linesdata.lines == 2 ) {
+                this.score += 30;
+            }else if ( linesdata.lines == 3 ) {
+                this.score += 60;
+            }else if ( linesdata.lines == 4 ) {
+                this.score += 100;
+            }else if ( linesdata.lines > 4 ) {
+                this.score += 200;
+            }
+            
+            for ( var i = 0; i < linesdata.fin.length; i++ ) {
 
-            this.add.tween ({
-                targets : cell,
-                scaleX : 0.5, scaleY : 0.5,
-                duration : 80,
-                yoyo : true,
-                repeat : 2,
-                ease : 'Linear',
-                onComplete : function () {
-                    this.targets [0].destroy ();
-                }
-            });
+                let cell = this.cellPermanentCont.getByName ('cp' + linesdata.fin[i] );
 
-            this.grid [ linesdata.fin[i] ] = 0;
+                this.add.tween ({
+                    targets : cell,
+                    scaleX : 0.5, scaleY : 0.5,
+                    duration : 80,
+                    yoyo : true,
+                    repeat : 2,
+                    ease : 'Linear',
+                    onComplete : function () {
+                        this.targets [0].destroy ();
+                    }
+
+                });
+
+                this.grid [ linesdata.fin[i] ] = 0;
+            }
+
+            this.playSound ('clashdraw')
+
         }
 
         this.scoreTxt.text = this.score;
@@ -732,7 +760,7 @@ class Intro extends Phaser.Scene {
 
         if ( activeCounter == 0 ) {
 
-            this.time.delayedCall( 1000, function () {
+            this.time.delayedCall( 500, function () {
                 this.showGameOverScreen ();
             }, [], this);  // delay in ms
             
@@ -772,6 +800,7 @@ class Intro extends Phaser.Scene {
 
         this.gameIsOver = true;
 
+        this.playSound ('ending');
 
     }
 
@@ -783,6 +812,8 @@ class Intro extends Phaser.Scene {
 
     gameReset ()
     {
+
+        this.playSound ('warp');
 
         this.score = 0;
 
