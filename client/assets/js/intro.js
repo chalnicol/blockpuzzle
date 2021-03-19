@@ -32,15 +32,14 @@ class Intro extends Phaser.Scene {
 
         this.score = 0;
 
+        this.bestScore = 100; // todo..
+
         this.isBoxClicked = false;
 
         this.gameIsOver = false;
 
         let _gW = this.game.config.width,
             _gH = this.game.config.height;
-
-
-        
 
         //create grid..
 
@@ -71,9 +70,7 @@ class Intro extends Phaser.Scene {
 
         this.trueSize = bsize;
 
-
-
-        //create 3 boxes..
+        //create hidden boxes..
         this.bottomCont = this.add.container (0, 0)
 
         const csize = _gW * 0.3,
@@ -113,7 +110,7 @@ class Intro extends Phaser.Scene {
 
         this.scoreTxt = this.add.text ( 424, 50, '0', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
 
-        this.bestTxt = this.add.text ( 866, 50, '5061', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
+        this.bestTxt = this.add.text ( 866, 50, '100', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
 
         this.add.text ( 22, 215, 'CURRENT SCORE', { fontSize: 30, fontFamily:'Oswald', color: '#803612' });
 
@@ -188,6 +185,18 @@ class Intro extends Phaser.Scene {
 
     }
 
+    addScore () {
+
+        this.scoreTxt.text = this.score;
+
+        if ( this.score > this.bestScore ) {
+
+            this.bestTxt.text = this.score;
+
+            this.bestScore = this.score;
+        }
+        
+    }
     playSound ( snd, vol=0.5 ) {
         this.music.play ( snd, { volume : vol } );
     }
@@ -251,7 +260,7 @@ class Intro extends Phaser.Scene {
         this.tweens.add ({
             targets : bigger,
             scaleX : 1, scaleY : 1,
-            y : pointer.y - (totalH/2) - 100,
+            y : pointer.y - (totalH/2) - 150,
             duration : 30,
             ease : 'Linear'
         });
@@ -305,7 +314,7 @@ class Intro extends Phaser.Scene {
 
         let bigEl = this.children.getByName ( 'bigEl' + this.boxClicked );
 
-        bigEl.setPosition ( x, y - (totalH/2) - 100  );
+        bigEl.setPosition ( x, y - (totalH/2) - 150  );
 
 
         let cellHit = this.getHit ();
@@ -632,7 +641,9 @@ class Intro extends Phaser.Scene {
 
         }
 
-        this.scoreTxt.text = this.score;
+        //this.scoreTxt.text = this.score;
+
+        this.addScore ();
 
     }
 
@@ -760,7 +771,7 @@ class Intro extends Phaser.Scene {
 
         if ( activeCounter == 0 ) {
 
-            this.time.delayedCall( 500, function () {
+            this.time.delayedCall( 1000, function () {
                 this.showGameOverScreen ();
             }, [], this);  // delay in ms
             
