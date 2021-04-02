@@ -196,12 +196,6 @@ class Intro extends Phaser.Scene {
 
             }
 
-            if ( this.gameIsOver ) {
-
-                this.removeGameOverScreen ();
-                this.gameReset ();
-            }
-
         }, this );
 
         this.input.on ('pointermove', function ( pointer ) {
@@ -812,32 +806,40 @@ class Intro extends Phaser.Scene {
     showGameOverScreen ()
     {
 
+        var _this = this;
+
         let _gW = this.game.config.width,
             _gH = this.game.config.height;
 
+        this.gameOverScreen = this.add.container(0, 0);
 
-        this.bgBlack = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH, 0x0a0a0a, 0.5 )
 
-        this.gameOverCont = this.add.container (0, _gH/2);
+        let bgBlack = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH, 0x0a0a0a, 0.5 ).setInteractive ();
 
-        //let srct = this.add.rectangle ( _gW/2, _gH*0.4, _gW*0.7, _gH*0.2, 0xffffff, 1 );
+        bgBlack.on ('pointerdown', function () {
+            _this.closeGameOverScreen ();
+            _this.gameReset ();
+        });
+
+
+        let gameOverCont = this.add.container (0, _gH/2);
 
         let srct = this.add.image ( _gW/2, _gH*0.4, 'gameOver' );
-
 
         let txt = this.add.text ( _gW/2, _gH*0.38, 'Game Over', { fontFamily:'Oswald', fontSize: _gH*0.04, color : 'black'} ).setOrigin(0.5);
 
         let txt2 = this.add.text ( _gW/2, _gH*0.425, 'Click Anywhere To Play Again', { fontFamily:'Oswald', fontSize: _gH*0.018, color : '#ff0000'} ).setOrigin(0.5);
 
-
-        this.gameOverCont.add ([ srct, txt, txt2 ]);
+        gameOverCont.add ([ srct, txt, txt2 ]);
 
         this.add.tween ({
-            targets : this.gameOverCont,
+            targets : gameOverCont,
             y : 0,
-            duration : 100,
+            duration : 150,
             ease : 'Linear'
         });
+
+        this.gameOverScreen.add ([ bgBlack, gameOverCont ]);
 
         this.gameIsOver = true;
 
@@ -845,10 +847,9 @@ class Intro extends Phaser.Scene {
 
     }
 
-    removeGameOverScreen ()
+    closeGameOverScreen ()
     {
-        this.gameOverCont.destroy ();
-        this.bgBlack.destroy ();
+        this.gameOverScreen.destroy ();
     }
 
     showSettingScreen () 
@@ -876,8 +877,6 @@ class Intro extends Phaser.Scene {
         const bs = 30, bsz = (620 - (2*bs))/3;
 
         const bx = (1080 - 620)/2 + (bsz/2), by = 750;
-        
-        
         
         for ( var i = 0; i < btns.length; i++) {
 
@@ -976,7 +975,6 @@ class Intro extends Phaser.Scene {
             this.createRandomElements ();
         }, [], this);  // delay in ms
     
-        
 
     }
 
