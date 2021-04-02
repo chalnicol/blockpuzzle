@@ -44,7 +44,10 @@ class Preloader extends Phaser.Scene {
         this.load.spritesheet('bigs', 'client/assets/images/big.png', { frameWidth: 130, frameHeight: 130 });
 
         this.load.spritesheet('smalls', 'client/assets/images/sm.png', { frameWidth: 60, frameHeight: 60 });
+
+        this.load.spritesheet('controls', 'client/assets/images/controls.png', { frameWidth: 150, frameHeight: 150 });
         
+
         this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
             'client/assets/sfx/sfx.ogg',
             'client/assets/sfx/sfx.mp3'

@@ -106,7 +106,7 @@ class Intro extends Phaser.Scene {
 
         this.add.rectangle (462, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
 
-        this.add.rectangle (905, 50, 153, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
+        
 
         this.scoreTxt = this.add.text ( 424, 50, '0', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
 
@@ -116,7 +116,34 @@ class Intro extends Phaser.Scene {
 
         this.add.text ( 464, 215, 'BEST SCORE', { fontSize: 30, fontFamily:'Oswald', color: '#803612' });
 
-        this.add.image ( 981, 126.5, 'setting', );
+
+        //settings..
+
+        this.musicOff = false;
+
+        this.soundOff = false;
+
+        let cont = this.add.container ( 905 + (153/2), 50 + (153/2) ).setSize ( 153, 153 ).setInteractive();
+
+        let rcte = this.add.rectangle (0, 0, 153, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a);
+
+        let imge = this.add.image ( 0, 0, 'setting' );
+
+        cont.add ([ rcte, imge ]);
+
+        cont.on ('pointerover', function () {
+            this.first.setFillStyle ( 0x99ffff, 1);
+        });
+        cont.on ('pointerout', function () {
+            this.first.setFillStyle ( 0x00ffff, 1);
+        });
+        cont.on ('pointerup', function () {
+            this.first.setFillStyle ( 0x00ffff, 1);
+        });
+        cont.on ('pointerdown', function () {
+            this.first.setFillStyle ( 0x99ff99, 1);
+            this.scene.showSettingScreen();
+        });
         
 
 
@@ -197,8 +224,11 @@ class Intro extends Phaser.Scene {
         }
         
     }
+
     playSound ( snd, vol=0.5 ) {
-        this.music.play ( snd, { volume : vol } );
+        if ( !this.soundOff ) {
+            this.music.play ( snd, { volume : vol } );
+        }
     }
 
     createRandomElements () 
@@ -614,7 +644,7 @@ class Intro extends Phaser.Scene {
             }else if ( linesdata.lines == 4 ) {
                 this.score += 100;
             }else if ( linesdata.lines > 4 ) {
-                this.score += 200;
+                this.score += 160;
             }
             
             for ( var i = 0; i < linesdata.fin.length; i++ ) {
@@ -805,7 +835,7 @@ class Intro extends Phaser.Scene {
         this.add.tween ({
             targets : this.gameOverCont,
             y : 0,
-            duration : 200,
+            duration : 100,
             ease : 'Linear'
         });
 
@@ -819,6 +849,99 @@ class Intro extends Phaser.Scene {
     {
         this.gameOverCont.destroy ();
         this.bgBlack.destroy ();
+    }
+
+    showSettingScreen () 
+    {
+        var _this = this;
+
+        this.playSound ('clicka');
+
+        
+        this.settingScreen = this.add.container ( 0, 0 );
+
+        let bgRect = this.add.rectangle ( 1080/2, 1920/2, 1080, 1920, 0x0a0a0a, 0.5 ).setInteractive();
+
+        bgRect.on('pointerdown', function () {
+            _this.closeSettingScreen ();
+        });
+
+        let txte = this.add.text ( 1080/2, 580, 'Settings', { color:'white', fontSize: 60, fontFamily:'Oswald' }).setOrigin(0.5);
+
+        
+        this.settingScreen.add ( [ bgRect, txte ] );
+        
+        const btns = ['sound', 'music', 'restart'];
+
+        const bs = 30, bsz = (620 - (2*bs))/3;
+
+        const bx = (1080 - 620)/2 + (bsz/2), by = 750;
+        
+        
+        
+        for ( var i = 0; i < btns.length; i++) {
+
+            let mnicont = this.add.container ( bx + i * ( bsz+bs), by ).setSize ( bsz, bsz ).setData('id', i).setInteractive();
+
+            let rct = this.add.rectangle ( 0, 0, bsz, bsz, 0xffffff, 1 ).setStrokeStyle ( 1, 0x3a3a3a );
+
+            let imgs = this.add.image ( 0, 0, 'controls', i );
+
+            if ( i == 0 && this.musicOff ) imgs.setFrame ( i + 3 );
+
+            if ( i == 1 && this.soundOff ) imgs.setFrame ( i + 3 );
+            
+            mnicont.add ( [ rct, imgs ]);
+
+            mnicont.on('pointerover', function () {
+                this.first.setFillStyle (0xcacaca, 1 );
+            });
+            mnicont.on('pointerout', function () {
+                this.first.setFillStyle (0xffffff, 1 );
+            });
+            mnicont.on('pointerup', function () {
+                this.first.setFillStyle (0xffffff, 1 );
+            });
+            
+            mnicont.on('pointerdown', function () {
+
+                _this.playSound ('clicka');
+
+                this.first.setFillStyle (0xff9999, 1 );
+
+                switch ( this.getData('id')) {
+
+                    case 0:
+                        _this.musicOff = !_this.musicOff;
+                        this.last.setFrame ( !_this.musicOff  ? this.getData('id') :  this.getData('id') + 3 ) ;
+
+                        break;
+                    case 1 : 
+                        _this.soundOff = !_this.soundOff;
+                        this.last.setFrame ( !_this.soundOff  ? this.getData('id') :  this.getData('id') + 3 ) ;
+                        
+                        break;
+                    case 2 :
+                        if ( _this.score > 0 ) {
+                            _this.closeSettingScreen ();
+                            _this.gameReset ();
+                        }
+                    default:
+                        break;
+                }
+
+            });
+
+            this.settingScreen.add ( mnicont );
+        
+        }
+
+        
+    }
+
+    closeSettingScreen () 
+    {
+        this.settingScreen.destroy();
     }
 
     gameReset ()
@@ -843,7 +966,6 @@ class Intro extends Phaser.Scene {
 
         this.elementsCont.each ( function ( child ) {
             child.destroy ();
-            
         });
 
         this.scoreTxt.text = "0";
@@ -857,4 +979,6 @@ class Intro extends Phaser.Scene {
         
 
     }
+
+
 }
