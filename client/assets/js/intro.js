@@ -58,11 +58,15 @@ class Intro extends Phaser.Scene {
             let xp = iy * ( bsize ) + sx,
                 yp = ix * ( bsize ) + sy;
 
-            let rcta = this.add.rectangle (xp, yp, bsize, bsize, 0x8e8e8e, 1 ).setOrigin (0).setStrokeStyle( 2, 0xffffff ).setData ('id', i ).setName('cell'+i);
+            let img = this.add.image ( xp + (bsize/2), yp + (bsize/2), 'cells' ).setName('img'+i);
+
+            let rcta = this.add.rectangle (xp, yp, bsize, bsize, 0x8e8e8e, 0 ).setOrigin (0).setData ('id', i ).setName('cell'+i);
 
             //let txt = this.add.text (xp +(bsize*0.1), yp + (bsize*0.05), i, { color:'white', fontSize : bsize*0.3, fontFamily : 'Oswald'} );
 
-            this.cellsCont.add ( rcta );
+           
+
+            this.cellsCont.add ( [ img, rcta  ]);
 
             this.grid.push ( 0 );
 
@@ -392,9 +396,9 @@ class Intro extends Phaser.Scene {
 
         for ( var i = 0; i < 64; i++) {
 
-            let cell = this.cellsCont.getByName ('cell' + i );
+            let cell = this.cellsCont.getByName ('img' + i );
 
-            cell.setFillStyle (0x8e8e8e, 1);
+            cell.setFrame ( 0 );
             
         }   
 
@@ -417,9 +421,11 @@ class Intro extends Phaser.Scene {
 
                         let n =  ((i+r)*8)+(c+j);
                         
-                        let cell = this.cellsCont.getByName ( 'cell' + n );
+                        let cell = this.cellsCont.getByName ( 'img' + n );
 
-                        cell.setFillStyle (0xcecece, 1);
+                        cell.setFrame (1);
+
+                        //cell.setFillStyle (0xcecece, 1);
 
                     }
                     
