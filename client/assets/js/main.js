@@ -1,7 +1,5 @@
 
 window.onload = function () {
-   
-    let _gW = 1080, _gH = 1920;
 
     var config = {
         type: Phaser.AUTO,
@@ -9,10 +7,10 @@ window.onload = function () {
             mode: Phaser.Scale.FIT,
             parent: 'game_div',
             autoCenter: Phaser.Scale.CENTER_BOTH,
-            width: _gW,
-            height: _gH
+            width: 1080,
+            height: 1920
         },
-        backgroundColor: '#cacaca',
+        backgroundColor: '#dedede',
         scene: [ Preloader, Intro ]
     };
 

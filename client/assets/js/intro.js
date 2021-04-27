@@ -99,17 +99,22 @@ class Intro extends Phaser.Scene {
 
         }
 
-        this.add.rectangle ( _gW/2, _gH*0.8, 1040, csize, 0x9c9c9c, 1 ).setStrokeStyle (2, 0xffffff);
+        //this.add.rectangle ( _gW/2, _gH*0.8, 1040, csize, 0x6e6e6e, 1 ).setStrokeStyle (2, 0xffffff);
 
-        this.add.text ( 25, _gH*0.97, 'Version By : Chalnicol', { fontSize: 30, fontFamily:'Oswald', color : 'black'});
+        this.add.image ( _gW/2, _gH*0.8, 'bga' )
+
+        this.add.text ( 25, _gH*0.97, 'Version By : Chalnicol', { fontSize: 30, fontFamily:'Oswald', color : '#333'});
 
 
         // score..
         
-        this.add.rectangle (20, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
+        //this.add.rectangle (20, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
 
-        this.add.rectangle (462, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
+        //this.add.rectangle (462, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
 
+        this.add.image ( 20, 50, 'scoresbg').setOrigin(0);
+
+        this.add.image ( 462, 50, 'scoresbg').setOrigin(0);
         
 
         this.scoreTxt = this.add.text ( 424, 50, '0', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
@@ -152,20 +157,7 @@ class Intro extends Phaser.Scene {
 
 
         // load elements data.. 
-        this.elements = [];
-
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-
-            if (this.readyState == 4 && this.status == 200) {
-
-                _this.elements = JSON.parse(this.responseText);
-
-                _this.createRandomElements();
-            }
-        };
-        xmlhttp.open("GET", "client/assets/json/data.json", true);
-        xmlhttp.send();
+        this.elements = gameElementsData;
 
         //create container for elements..
         this.elementsCont = this.add.container (0, 0);
@@ -173,12 +165,6 @@ class Intro extends Phaser.Scene {
         //create container for cells fielded..
         this.cellPermanentCont = this.add.container(0, 0);
 
-        //initBgSound
-        //this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
-
-        //this.bgmusic.play();
-
-        this.music = this.sound.addAudioSprite('sfx');
 
         //..
         this.input.on ('pointerup', function ( pointer ) {
@@ -208,6 +194,22 @@ class Intro extends Phaser.Scene {
             }
         }, this);
 
+        
+        //..
+        this.initMusicBackground();
+
+        this.createRandomElements ();
+
+    }
+
+    initMusicBackground () {
+
+        this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
+
+        this.bgmusic.play();
+
+        this.soundFx = this.sound.addAudioSprite('sfx');
+
     }
 
     addScore () {
@@ -225,7 +227,7 @@ class Intro extends Phaser.Scene {
 
     playSound ( snd, vol=0.5 ) {
         if ( !this.soundOff ) {
-            this.music.play ( snd, { volume : vol } );
+            this.soundFx.play ( snd, { volume : vol } );
         }
     }
 
@@ -248,7 +250,7 @@ class Intro extends Phaser.Scene {
 
             let dim = 60;
 
-            let element = new GameElement ( this, box.x, box.y, null,  this.elements [ randNum ], dim, rndClrId, 1, 'smalls' ).setName ('el' + i );
+            let element = new GameElement ( this, box.x, box.y, null,  this.elements [ randNum ], dim, rndClrId, 0.4, 'gems' ).setName ('el' + i );
         
             this.elementsCont.add (element);
 
@@ -529,7 +531,7 @@ class Intro extends Phaser.Scene {
 
                     //let cellP = this.add.rectangle ( cll.x + this.trueSize/2, cll.y + this.trueSize/2, this.trueSize, this.trueSize, clr, 1 ).setStrokeStyle ( 2, 0x1a1a1a ).setName ('cp' + cellid ).setData('origClr', clrid );
 
-                    let cellP = this.add.image ( cll.x + this.trueSize/2, cll.y + this.trueSize/2, 'bigs', clrid ).setName ('cp' + cellid ).setData('origClr', clrid );
+                    let cellP = this.add.image ( cll.x + this.trueSize/2, cll.y + this.trueSize/2, 'gems', clrid ).setName ('cp' + cellid ).setData('origClr', clrid );
 
                     this.cellPermanentCont.add ( cellP );
 

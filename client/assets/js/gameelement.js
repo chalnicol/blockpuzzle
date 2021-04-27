@@ -1,6 +1,6 @@
 class GameElement extends Phaser.GameObjects.Container {
 
-    constructor(scene, x, y, children, dataObj, dims, clrid, scl=1, img = 'bigs' ) {
+    constructor(scene, x, y, children, dataObj, dims, clrid, scl=1, img = 'gems' ) {
 
         super(scene, x, y, children);
         // ...
