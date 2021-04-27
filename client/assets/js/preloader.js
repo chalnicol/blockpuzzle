@@ -7,29 +7,29 @@ class Preloader extends Phaser.Scene {
     preload ()
     {
         
-        let _gW = this.game.config.width,
-            _gH = this.game.config.height;
 
-        this.add.text ( _gW/2, _gH/2, '', { fontSize: 36, fontFamily:'Oswald', color:'#fff'}).setOrigin(0.5);
+        const mCont = this.add.container ( 540, 800 );
 
-        let txt = this.add.text (_gW/2, 500, 'Loading : 0%', { color:'#333', fontFamily:'Oswald', fontSize:34 }).setOrigin(0.5);
+
+        let txtb = this.add.text ( 0, -60, 'Loading : 0%', { color:'#333', fontFamily:'Oswald', fontSize:34 }).setOrigin(0.5);
 
         //..
-        let brct = this.add.rectangle ( (_gW - 350 )/2, 560, 350, 40 ).setStrokeStyle (3, 0x0a0a0a).setOrigin(0, 0.5);
+        let brct = this.add.rectangle ( 0, 0, 350, 40 ).setStrokeStyle (3, 0x0a0a0a);
+        
         //..
-        let rW = 340, rH = 30;
+        const rW = 340, rH = 30;
 
-        let rct = this.add.rectangle ( (_gW - rW)/2, 560, 5, rH, 0x6a6a6a, 1 ).setOrigin(0, 0.5);
+        let srct = this.add.rectangle ( -170, 0, 5, rH, 0x6a6a6a, 1 ).setOrigin(0, 0.5);
 
-        this.load.on ('complete', function () {
-            this.scene.start('Intro');
-        }, this);
+
+        mCont.add ([ txtb, brct, srct ]);
+
 
         this.load.on ('progress', function (progress) {
 
-            txt.setText ( 'Loading : ' + Math.ceil( progress * 100 ) + '%' );
+            txtb.setText ( 'Loading : ' + Math.ceil( progress * 100 ) + '%' );
 
-            if ( (rW * progress) > 5) rct.setSize ( rW * progress, rH );
+            if ( (rW * progress) > 5) srct.setSize ( rW * progress, rH );
 
         });
 
@@ -50,11 +50,15 @@ class Preloader extends Phaser.Scene {
 
         this.load.spritesheet('smalls', 'client/assets/images/sm.png', { frameWidth: 60, frameHeight: 60 });
 
-        this.load.spritesheet('controls', 'client/assets/images/controls.png', { frameWidth: 150, frameHeight: 150 });
+        this.load.spritesheet('controls', 'client/assets/images/controls.png', { frameWidth: 130, frameHeight: 130 });
 
         this.load.spritesheet('cells', 'client/assets/images/cells.png', { frameWidth: 150, frameHeight: 150 });
-        
 
+        this.load.spritesheet('controls_xl', 'client/assets/images/controls_xl.png', { frameWidth: 160, frameHeight: 160 });
+        
+        this.load.spritesheet('buts', 'client/assets/images/buts.png', { frameWidth: 155, frameHeight: 155 });
+
+        
         this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
             'client/assets/sfx/sfx.ogg',
             'client/assets/sfx/sfx.mp3'
@@ -65,6 +69,16 @@ class Preloader extends Phaser.Scene {
         this.load.audio ('bgsound2', ['client/assets/sfx/puzzlebg2.ogg', 'client/assets/sfx/puzzlebg2.mp3'] );
 
 
+    }
+
+    create ()
+    {
+
+        this.add.text ( 540, 960, 'Click Anywhere To Proceed', { color: '#333', fontFamily:"Oswald", fontSize: 34 }).setOrigin (0.5);
+
+        this.input.once ('pointerup', () => {
+            this.scene.start ('Intro');
+        })
     }
     
 }

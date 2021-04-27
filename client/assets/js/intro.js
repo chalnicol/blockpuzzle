@@ -134,24 +134,26 @@ class Intro extends Phaser.Scene {
 
         let cont = this.add.container ( 905 + (153/2), 50 + (153/2) ).setSize ( 153, 153 ).setInteractive();
 
-        let rcte = this.add.rectangle (0, 0, 153, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a);
+        //let rcte = this.add.rectangle (0, 0, 153, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a);
 
-        let imge = this.add.image ( 0, 0, 'setting' );
+        const rcte = this.add.image ( 0, 0, 'buts');
+
+        const imge = this.add.image ( 0, 0, 'setting' );
 
         cont.add ([ rcte, imge ]);
 
         cont.on ('pointerover', function () {
-            this.first.setFillStyle ( 0x99ffff, 1);
+            this.first.setFrame ( 1 )
         });
         cont.on ('pointerout', function () {
-            this.first.setFillStyle ( 0x00ffff, 1);
+            this.first.setFrame ( 0 )
         });
         cont.on ('pointerup', function () {
-            this.first.setFillStyle ( 0x00ffff, 1);
+            this.first.setFrame ( 0 )
+            this.scene.showSettingScreen();
         });
         cont.on ('pointerdown', function () {
-            this.first.setFillStyle ( 0x99ff99, 1);
-            this.scene.showSettingScreen();
+            this.first.setFrame ( 2 )
         });
         
 
@@ -197,6 +199,8 @@ class Intro extends Phaser.Scene {
         
         //..
         this.initMusicBackground();
+
+        this.createSettingScreen ();
 
         this.createRandomElements ();
 
@@ -834,9 +838,9 @@ class Intro extends Phaser.Scene {
 
         let srct = this.add.image ( _gW/2, _gH*0.4, 'gameOver' );
 
-        let txt = this.add.text ( _gW/2, _gH*0.38, 'Game Over', { fontFamily:'Oswald', fontSize: _gH*0.04, color : 'black'} ).setOrigin(0.5);
+        let txt = this.add.text ( _gW/2, _gH*0.39, 'Game Over', { fontFamily:'Oswald', fontSize: _gH*0.04, color : 'black'} ).setOrigin(0.5);
 
-        let txt2 = this.add.text ( _gW/2, _gH*0.425, 'Click Anywhere To Play Again', { fontFamily:'Oswald', fontSize: _gH*0.018, color : '#ff0000'} ).setOrigin(0.5);
+        let txt2 = this.add.text ( _gW/2, _gH*0.44, 'Click Anywhere To Play Again', { fontFamily:'Oswald', fontSize: _gH*0.018, color : '#ff0000'} ).setOrigin(0.5);
 
         gameOverCont.add ([ srct, txt, txt2 ]);
 
@@ -860,96 +864,105 @@ class Intro extends Phaser.Scene {
         this.gameOverScreen.destroy ();
     }
 
-    showSettingScreen () 
+    showSettingScreen ( show = true )
     {
-        var _this = this;
 
         this.playSound ('clicka');
 
-        
+        this.settingScreen.setVisible ( show );
+
+    }
+
+    createSettingScreen () {
+
         this.settingScreen = this.add.container ( 0, 0 );
 
-        let bgRect = this.add.rectangle ( 1080/2, 1920/2, 1080, 1920, 0x0a0a0a, 0.5 ).setInteractive();
+        let bgRect = this.add.rectangle ( 540, 960, 1080, 1920, 0x0a0a0a, 0.3 ).setInteractive();
 
-        bgRect.on('pointerdown', function () {
-            _this.closeSettingScreen ();
+        bgRect.on('pointerdown', () => {
+            this.showSettingScreen ( false );
         });
 
-        let txte = this.add.text ( 1080/2, 580, 'Settings', { color:'white', fontSize: 60, fontFamily:'Oswald' }).setOrigin(0.5);
+        const bg = this.add.image ( 540, 700, 'gameOver' );
 
-        
-        this.settingScreen.add ( [ bgRect, txte ] );
+        const txte = this.add.text ( 540, 630, 'Settings', { color:'#333', fontSize: 46, fontFamily:'Oswald' }).setOrigin(0.5);
+
+        this.settingScreen.add ( [ bgRect, bg, txte ] );
         
         const btns = ['sound', 'music', 'restart'];
 
-        const bs = 30, bsz = (620 - (2*bs))/3;
+        const bs = 30, bsz = 160;
 
-        const bx = (1080 - 620)/2 + (bsz/2), by = 750;
+        const bx = ( 540 - (( 3 * ( bsz + bs) - bs )/2) ) + (bsz/2), by = 760;
         
-        for ( var i = 0; i < btns.length; i++) {
+        for ( let i = 0; i < btns.length; i++) {
 
-            let mnicont = this.add.container ( bx + i * ( bsz+bs), by ).setSize ( bsz, bsz ).setData('id', i).setInteractive();
+            let mnicont = this.add.container ( bx + i * ( bsz+bs), by ).setData('id', i).setSize ( bsz, bsz ).setInteractive();
 
-            let rct = this.add.rectangle ( 0, 0, bsz, bsz, 0xffffff, 1 ).setStrokeStyle ( 1, 0x3a3a3a );
+            let rct = this.add.image (0,0, 'controls_xl');
 
             let imgs = this.add.image ( 0, 0, 'controls', i );
 
-            if ( i == 0 && this.musicOff ) imgs.setFrame ( i + 3 );
-
-            if ( i == 1 && this.soundOff ) imgs.setFrame ( i + 3 );
-            
+    
             mnicont.add ( [ rct, imgs ]);
 
-            mnicont.on('pointerover', function () {
-                this.first.setFillStyle (0xcacaca, 1 );
+            mnicont.on('pointerover', function () {       
+                this.first.setFrame (1);
             });
             mnicont.on('pointerout', function () {
-                this.first.setFillStyle (0xffffff, 1 );
+                this.first.setFrame (0);           
             });
-            mnicont.on('pointerup', function () {
-                this.first.setFillStyle (0xffffff, 1 );
-            });
-            
             mnicont.on('pointerdown', function () {
+                this.first.setFrame (2);
+                
+            });
+            mnicont.on('pointerup', () =>  {
 
-                _this.playSound ('clicka');
 
-                this.first.setFillStyle (0xff9999, 1 );
+                mnicont.first.setFrame (0);
 
-                switch ( this.getData('id')) {
+                this.playSound ('clicka');
+
+                const btnId = mnicont.getData ('id');
+
+                switch ( btnId ) {
 
                     case 0:
-                        _this.musicOff = !_this.musicOff;
-                        this.last.setFrame ( !_this.musicOff  ? this.getData('id') :  this.getData('id') + 3 ) ;
+
+                        this.musicOff = !this.musicOff;
+
+                        mnicont.last.setFrame ( !this.musicOff  ? btnId :  btnId + 3 ) ;
 
                         break;
                     case 1 : 
-                        _this.soundOff = !_this.soundOff;
-                        this.last.setFrame ( !_this.soundOff  ? this.getData('id') :  this.getData('id') + 3 ) ;
+                        this.soundOff = !this.soundOff;
+
+                        mnicont.last.setFrame ( !this.soundOff  ? btnId :  btnId + 3 ) ;
                         
                         break;
                     case 2 :
-                        if ( _this.score > 0 ) {
-                            _this.closeSettingScreen ();
-                            _this.gameReset ();
+                        if ( this.score > 0 ) {
+
+                            this.closeSettingScreen ();
+
+                            this.gameReset ();
                         }
                     default:
+                        //..
                         break;
                 }
 
             });
 
-            this.settingScreen.add ( mnicont );
-        
+
+            this.settingScreen.add ( mnicont ).setVisible (false);;
+            
+          
         }
 
         
     }
 
-    closeSettingScreen () 
-    {
-        this.settingScreen.destroy();
-    }
 
     gameReset ()
     {
