@@ -8,7 +8,7 @@ class Preloader extends Phaser.Scene {
     {
         
 
-        const mCont = this.add.container ( 540, 800 );
+        const mCont = this.add.container ( 540, 960 );
 
 
         let txtb = this.add.text ( 0, -60, 'Loading : 0%', { color:'#333', fontFamily:'Oswald', fontSize:34 }).setOrigin(0.5);
@@ -23,6 +23,11 @@ class Preloader extends Phaser.Scene {
 
 
         mCont.add ([ txtb, brct, srct ]);
+
+
+        this.load.on ('complete', function (progress) {
+            mCont.visible = false;
+        });
 
 
         this.load.on ('progress', function (progress) {
@@ -44,6 +49,8 @@ class Preloader extends Phaser.Scene {
 
         this.load.image('bga', 'client/assets/images/bg.png');
 
+        this.load.image('settingsBg', 'client/assets/images/settingsScreen.png');
+
         this.load.spritesheet('bigs', 'client/assets/images/big.png', { frameWidth: 130, frameHeight: 130 });
 
         this.load.spritesheet('gems', 'client/assets/images/gems.png', { frameWidth: 150, frameHeight: 150 });
@@ -58,15 +65,13 @@ class Preloader extends Phaser.Scene {
         
         this.load.spritesheet('buts', 'client/assets/images/buts.png', { frameWidth: 155, frameHeight: 155 });
 
-        
+
         this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
             'client/assets/sfx/sfx.ogg',
             'client/assets/sfx/sfx.mp3'
         ]);
 
-        this.load.audio ('bgsound', ['client/assets/sfx/puzzlebg.ogg', 'client/assets/sfx/puzzlebg.mp3'] );
-
-        this.load.audio ('bgsound2', ['client/assets/sfx/puzzlebg2.ogg', 'client/assets/sfx/puzzlebg2.mp3'] );
+        this.load.audio ('bgsound', ['client/assets/sfx/starcommander.ogg', 'client/assets/sfx/starcommander.mp3'] );
 
 
     }
@@ -74,7 +79,7 @@ class Preloader extends Phaser.Scene {
     create ()
     {
 
-        this.add.text ( 540, 960, 'Click Anywhere To Proceed', { color: '#333', fontFamily:"Oswald", fontSize: 34 }).setOrigin (0.5);
+        this.add.text ( 540, 960, 'Click Anywhere To Proceed', { color: '#333', fontFamily:"Oswald", fontSize: 40 }).setOrigin (0.5);
 
         this.input.once ('pointerup', () => {
             this.scene.start ('Intro');

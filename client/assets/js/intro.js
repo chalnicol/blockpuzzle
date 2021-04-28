@@ -32,7 +32,7 @@ class Intro extends Phaser.Scene {
 
         this.score = 0;
 
-        this.bestScore = 100; // todo..
+        this.bestScore = 0; // todo..
 
         this.isBoxClicked = false;
 
@@ -103,14 +103,31 @@ class Intro extends Phaser.Scene {
 
         this.add.image ( _gW/2, _gH*0.8, 'bga' )
 
-        this.add.text ( 25, _gH*0.97, 'Version By : Chalnicol', { fontSize: 30, fontFamily:'Oswald', color : '#333'});
+        this.add.text ( 25, 1860, 'Version By : Chalnicol', { fontSize: 30, fontFamily:'Oswald', color : '#6e6e6e'});
 
 
-        // score..
         
-        //this.add.rectangle (20, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
 
-        //this.add.rectangle (462, 50, 424, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a).setOrigin(0);
+        //get best score
+
+        var value = JSON.parse(localStorage.getItem('mydata'));
+        
+        if ( value != null ) {
+
+            this.bestScore = Number ( value.bestScore ) ;
+
+            console.log ('best', this.bestScore);
+
+        } else {
+
+            localStorage.setItem('mydata', JSON.stringify( { bestScore : 0, prevScore : 0 } ));
+            
+            //localStorage.removeItem(mydata);
+
+        }
+
+
+        //..
 
         this.add.image ( 20, 50, 'scoresbg').setOrigin(0);
 
@@ -119,7 +136,7 @@ class Intro extends Phaser.Scene {
 
         this.scoreTxt = this.add.text ( 424, 50, '0', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
 
-        this.bestTxt = this.add.text ( 866, 50, '100', { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
+        this.bestTxt = this.add.text ( 866, 50, this.bestScore, { fontSize: 120, fontFamily:'Oswald', color:'#7e7e7e' }).setOrigin (1, 0);
 
         this.add.text ( 22, 215, 'CURRENT SCORE', { fontSize: 30, fontFamily:'Oswald', color: '#803612' });
 
@@ -132,9 +149,9 @@ class Intro extends Phaser.Scene {
 
         this.soundOff = false;
 
-        let cont = this.add.container ( 905 + (153/2), 50 + (153/2) ).setSize ( 153, 153 ).setInteractive();
+        const bsz = 153;
 
-        //let rcte = this.add.rectangle (0, 0, 153, 153, 0x00ffff, 1 ).setStrokeStyle (2, 0x3a3a3a);
+        let cont = this.add.container ( 905 + (bsz/2), 50 + (bsz/2) ).setSize ( bsz, bsz ).setInteractive();
 
         const rcte = this.add.image ( 0, 0, 'buts');
 
@@ -208,7 +225,7 @@ class Intro extends Phaser.Scene {
 
     initMusicBackground () {
 
-        this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
+        this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
 
         this.bgmusic.play();
 
@@ -807,12 +824,18 @@ class Intro extends Phaser.Scene {
 
         if ( activeCounter == 0 ) {
 
-            this.time.delayedCall( 1000, function () {
-                this.showGameOverScreen ();
-            }, [], this);  // delay in ms
+            this.setToLocalStorage ();
+
+            this.time.delayedCall( 500,  this.showGameOverScreen, [], this );
             
         } 
 
+    }
+
+    setToLocalStorage () 
+    {
+        //..
+        localStorage.setItem('mydata', JSON.stringify({ bestScore : this.bestScore, prevScore : this.score }));
     }
 
     showGameOverScreen ()
@@ -826,13 +849,12 @@ class Intro extends Phaser.Scene {
         this.gameOverScreen = this.add.container(0, 0);
 
 
-        let bgBlack = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH, 0x0a0a0a, 0.5 ).setInteractive ();
+        let bgBlack = this.add.rectangle ( 540, 960, _gW, _gH, 0x0a0a0a, 0.5 ).setInteractive ();
 
-        bgBlack.on ('pointerdown', function () {
-            _this.closeGameOverScreen ();
-            _this.gameReset ();
+        bgBlack.on ('pointerup', () => {
+            this.closeGameOverScreen ();
+            this.gameReset ();
         });
-
 
         let gameOverCont = this.add.container (0, _gH/2);
 
@@ -877,23 +899,29 @@ class Intro extends Phaser.Scene {
 
         this.settingScreen = this.add.container ( 0, 0 );
 
-        let bgRect = this.add.rectangle ( 540, 960, 1080, 1920, 0x0a0a0a, 0.3 ).setInteractive();
+        let bgRect = this.add.rectangle ( 540, 960, 1080, 1920, 0x0a0a0a, 0.5 ).setInteractive();
 
-        bgRect.on('pointerdown', () => {
+        bgRect.on('pointerup', () => {
             this.showSettingScreen ( false );
         });
 
-        const bg = this.add.image ( 540, 700, 'gameOver' );
+        const bg = this.add.image ( 540, 700, 'settingsBg' ).setInteractive();
 
-        const txte = this.add.text ( 540, 630, 'Settings', { color:'#333', fontSize: 46, fontFamily:'Oswald' }).setOrigin(0.5);
+        let rect = this.add.rectangle ( 855, 529, 88, 88 ).setInteractive();
 
-        this.settingScreen.add ( [ bgRect, bg, txte ] );
+        rect.on('pointerup', () => {
+            this.showSettingScreen ( false );
+        });
+
+        //const txte = this.add.text ( 540, 630, 'Settings', { color:'#333', fontSize: 46, fontFamily:'Oswald' }).setOrigin(0.5);
+
+        this.settingScreen.add ( [ bgRect, bg, rect ] );
         
         const btns = ['sound', 'music', 'restart'];
 
         const bs = 30, bsz = 160;
 
-        const bx = ( 540 - (( 3 * ( bsz + bs) - bs )/2) ) + (bsz/2), by = 760;
+        const bx = ( 540 - (( 3 * ( bsz + bs) - bs )/2) ) + (bsz/2), by = 730;
         
         for ( let i = 0; i < btns.length; i++) {
 
@@ -962,7 +990,6 @@ class Intro extends Phaser.Scene {
 
         
     }
-
 
     gameReset ()
     {
