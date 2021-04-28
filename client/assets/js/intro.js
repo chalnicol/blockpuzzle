@@ -154,9 +154,9 @@ class Intro extends Phaser.Scene {
 
         //settings..
 
-        this.musicOff = false;
+        this.musicOn = true;
 
-        this.soundOff = false;
+        this.soundOn = true;
 
         const bsz = 153;
 
@@ -230,6 +230,7 @@ class Intro extends Phaser.Scene {
 
         this.createRandomElements ();
 
+
     }
 
     initMusicBackground () {
@@ -255,10 +256,19 @@ class Intro extends Phaser.Scene {
         
     }
 
-    playSound ( snd, vol=0.5 ) {
-        if ( !this.soundOff ) {
-            this.soundFx.play ( snd, { volume : vol } );
+    playBgMusic ( on = true ) {
+
+        if ( !on ) {
+            this.bgmusic.pause();
+        }else {
+            this.bgmusic.resume()
         }
+    }
+
+    playSound ( snd, vol=0.5 ) {
+
+        if ( this.soundOn ) this.soundFx.play ( snd, { volume : vol } );
+    
     }
 
     createRandomElements () 
@@ -864,26 +874,37 @@ class Intro extends Phaser.Scene {
         this.gameOverScreen = this.add.container(0, 0);
 
 
-        let bgBlack = this.add.rectangle ( 540, 960, _gW, _gH, 0x0a0a0a, 0.5 ).setInteractive ();
+        const bgBlack = this.add.rectangle ( 540, 960, _gW, _gH, 0x0a0a0a, 0.5 ).setInteractive ();
 
-        bgBlack.on ('pointerup', () => {
+        const gameOverCont = this.add.container ( -540, 0);
+
+        const srct = this.add.image ( 540, 768, 'gameOver' );
+
+        const txt = this.add.text ( 540, 725, 'Game Over', { fontFamily:'Oswald', fontSize: 60, color : '#333'} ).setOrigin(0.5);
+
+        //let txt2 = this.add.text ( 540, 844, 'Click Anywhere To Play Again', { fontFamily:'Oswald', fontSize: _gH*0.018, color : '#ff0000'} ).setOrigin(0.5);
+
+        const btn = new MyButton ( this, 540, 864, 200, 100, 'btn', 'promptbtns', '', '', 'Play Again', 34 );
+
+        btn.on('pointerdown', ()=> {
+
+            btn.btnState ('pressed');
+        });
+        btn.on('pointerup', ()=> {
+            
+            btn.btnState ('idle');
+            
             this.closeGameOverScreen ();
+
             this.gameReset ();
         });
+        
 
-        let gameOverCont = this.add.container (0, _gH/2);
-
-        let srct = this.add.image ( _gW/2, _gH*0.4, 'gameOver' );
-
-        let txt = this.add.text ( _gW/2, _gH*0.39, 'Game Over', { fontFamily:'Oswald', fontSize: _gH*0.04, color : 'black'} ).setOrigin(0.5);
-
-        let txt2 = this.add.text ( _gW/2, _gH*0.44, 'Click Anywhere To Play Again', { fontFamily:'Oswald', fontSize: _gH*0.018, color : '#ff0000'} ).setOrigin(0.5);
-
-        gameOverCont.add ([ srct, txt, txt2 ]);
+        gameOverCont.add ([ srct, txt, btn ]);
 
         this.add.tween ({
             targets : gameOverCont,
-            y : 0,
+            x : 0,
             duration : 150,
             ease : 'Linear'
         });
@@ -898,7 +919,15 @@ class Intro extends Phaser.Scene {
 
     closeGameOverScreen ()
     {
-        this.gameOverScreen.destroy ();
+        this.add.tween ({
+            targets : this.gameOverScreen.last,
+            x : 1620,
+            duration : 300,
+            ease : 'Power3',
+            onComplete: () => this.gameOverScreen.destroy ()
+        });
+
+       
     }
 
     showSettingScreen ( show = true )
@@ -972,21 +1001,25 @@ class Intro extends Phaser.Scene {
 
                     case 0:
 
-                        this.musicOff = !this.musicOff;
+                        this.musicOn = !this.musicOn;
 
-                        mnicont.last.setFrame ( !this.musicOff  ? btnId :  btnId + 3 ) ;
+                        this.playBgMusic ( this.musicOn );
 
+                        mnicont.last.setFrame ( this.musicOn  ? btnId :  btnId + 3 ) ;
+
+                    
                         break;
                     case 1 : 
-                        this.soundOff = !this.soundOff;
 
-                        mnicont.last.setFrame ( !this.soundOff  ? btnId :  btnId + 3 ) ;
+                        this.soundOn = !this.soundOn ;
+
+                        mnicont.last.setFrame ( this.soundOn  ? btnId :  btnId + 3 ) ;
                         
                         break;
                     case 2 :
                         if ( this.score > 0 ) {
 
-                            this.closeSettingScreen ();
+                            this.showSettingScreen ( false );
 
                             this.gameReset ();
                         }

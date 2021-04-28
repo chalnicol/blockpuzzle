@@ -51,11 +51,9 @@ class Preloader extends Phaser.Scene {
 
         this.load.image('settingsBg', 'client/assets/images/settingsScreen.png');
 
-        this.load.spritesheet('bigs', 'client/assets/images/big.png', { frameWidth: 130, frameHeight: 130 });
 
         this.load.spritesheet('gems', 'client/assets/images/gems.png', { frameWidth: 150, frameHeight: 150 });
 
-        this.load.spritesheet('smalls', 'client/assets/images/sm.png', { frameWidth: 60, frameHeight: 60 });
 
         this.load.spritesheet('controls', 'client/assets/images/controls.png', { frameWidth: 130, frameHeight: 130 });
 
@@ -65,6 +63,7 @@ class Preloader extends Phaser.Scene {
         
         this.load.spritesheet('buts', 'client/assets/images/buts.png', { frameWidth: 155, frameHeight: 155 });
 
+        this.load.spritesheet('promptbtns', 'client/assets/images/promptbtns.png', { frameWidth: 210, frameHeight: 110 });
 
         this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
             'client/assets/sfx/sfx.ogg',
