@@ -109,22 +109,31 @@ class Intro extends Phaser.Scene {
         
 
         //get best score
-
-        var value = JSON.parse(localStorage.getItem('mydata'));
         
-        if ( value != null ) {
+        try {
 
-            this.bestScore = Number ( value.bestScore ) ;
+            var value = JSON.parse(localStorage.getItem('mydata'));
+        
+            if ( value != null ) {
+    
+                this.bestScore = Number ( value.bestScore ) ;
+    
+                console.log ('best', this.bestScore);
+    
+            } else {
+    
+                localStorage.setItem('mydata', JSON.stringify( { bestScore : 0, prevScore : 0 } ));
+                
+                //localStorage.removeItem(mydata);
+    
+            }
 
-            console.log ('best', this.bestScore);
-
-        } else {
-
-            localStorage.setItem('mydata', JSON.stringify( { bestScore : 0, prevScore : 0 } ));
+        } catch (error) {
             
-            //localStorage.removeItem(mydata);
+            this.bestScore = 0;
 
         }
+       
 
 
         //..
@@ -835,7 +844,13 @@ class Intro extends Phaser.Scene {
     setToLocalStorage () 
     {
         //..
-        localStorage.setItem('mydata', JSON.stringify({ bestScore : this.bestScore, prevScore : this.score }));
+        try {
+            localStorage.setItem('mydata', JSON.stringify({ bestScore : this.bestScore, prevScore : this.score }));
+        } catch (error) {
+            
+            console.log ('this is safari..');
+        }
+       
     }
 
     showGameOverScreen ()
