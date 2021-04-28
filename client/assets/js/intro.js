@@ -230,6 +230,7 @@ class Intro extends Phaser.Scene {
 
         this.createRandomElements ();
 
+        // this.showGameOverScreen ();
 
     }
 
@@ -845,7 +846,7 @@ class Intro extends Phaser.Scene {
 
             this.setToLocalStorage ();
 
-            this.time.delayedCall( 500,  this.showGameOverScreen, [], this );
+            this.time.delayedCall( 800,  this.showGameOverScreen, [], this );
             
         } 
 
@@ -876,15 +877,13 @@ class Intro extends Phaser.Scene {
 
         const bgBlack = this.add.rectangle ( 540, 960, _gW, _gH, 0x0a0a0a, 0.5 ).setInteractive ();
 
-        const gameOverCont = this.add.container ( -540, 0);
+        const gameOverCont = this.add.container ( 540, 960 );
 
-        const srct = this.add.image ( 540, 768, 'gameOver' );
+        const srct = this.add.image ( 0, -192, 'gameOver' );
 
-        const txt = this.add.text ( 540, 725, 'Game Over', { fontFamily:'Oswald', fontSize: 60, color : '#333'} ).setOrigin(0.5);
+        const txt = this.add.text ( 0, -235, 'Game Over!', { fontFamily:'Oswald', fontSize: 56, color : '#6e6e6e'} ).setOrigin(0.5);
 
-        //let txt2 = this.add.text ( 540, 844, 'Click Anywhere To Play Again', { fontFamily:'Oswald', fontSize: _gH*0.018, color : '#ff0000'} ).setOrigin(0.5);
-
-        const btn = new MyButton ( this, 540, 864, 200, 100, 'btn', 'promptbtns', '', '', 'Play Again', 34 );
+        const btn = new MyButton ( this, 0, -100, 200, 100, 'btn', 'promptbtns', '', '', 'Play Again', 34 );
 
         btn.on('pointerdown', ()=> {
 
@@ -900,13 +899,14 @@ class Intro extends Phaser.Scene {
         });
         
 
-        gameOverCont.add ([ srct, txt, btn ]);
+        gameOverCont.add ([ srct, txt, btn ]).setScale (0.1);
 
         this.add.tween ({
             targets : gameOverCont,
-            x : 0,
-            duration : 150,
-            ease : 'Linear'
+            scale : 1,
+            duration : 500,
+            easeParams : [ 1.1, 0.6 ],
+            ease : 'Elastic'
         });
 
         this.gameOverScreen.add ([ bgBlack, gameOverCont ]);
@@ -921,8 +921,9 @@ class Intro extends Phaser.Scene {
     {
         this.add.tween ({
             targets : this.gameOverScreen.last,
-            x : 1620,
-            duration : 300,
+            x : 1400,
+            duration : 200,
+            //easeParams : [ 0, 0.8 ],
             ease : 'Power3',
             onComplete: () => this.gameOverScreen.destroy ()
         });
